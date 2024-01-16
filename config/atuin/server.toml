@@ -1,0 +1,7 @@
+port = 8888
+open_registration = true
+
+[tls]
+enable = true
+cert_path = "/root/.config/fullchain.pem"
+pkey_path = "/root/.config/privkey.pem"
