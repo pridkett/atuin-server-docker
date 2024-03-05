@@ -6,19 +6,25 @@ FROM rust:slim-bookworm as builder
 RUN apt-get update && apt-get install -y \
     pkg-config git \
     libssl-dev \
-    musl-tools
+    musl-tools \
+    curl
 
-# Clone the atuin source code
 WORKDIR /usr/src/atuin
-RUN git clone https://github.com/atuinsh/atuin.git . 
 
+# prep the environment for a static rust binary
 RUN mkdir /usr/src/atuin/.cargo/
 RUN echo "[target.'cfg(target_os = \"linux\")']" >> /usr/src/atuin/.cargo/config
 RUN echo 'rustflags = ["-C", "target-feature=+crt-static"]' >> /usr/src/atuin/.cargo/config
+RUN rustup target add armv7-unknown-linux-musleabihf
+
+# Clone the atuin source code
+ENV ATUIN_VERSION=v18.0.2
+RUN curl -L https://github.com/atuinsh/atuin/archive/refs/tags/${ATUIN_VERSION}.tar.gz -o atuin.tar.gz && \
+    tar -xvzf atuin.tar.gz --strip-components=1
 
 # Build the atuin binary
-RUN rustup target add armv7-unknown-linux-musleabihf
 RUN cargo build --target armv7-unknown-linux-musleabihf --release
+RUN strip /usr/src/atuin/target/armv7-unknown-linux-musleabihf/release/atuin
 
 # Runtime Stage
 FROM debian:bookworm-slim
