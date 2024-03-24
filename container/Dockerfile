@@ -18,7 +18,7 @@ RUN echo 'rustflags = ["-C", "target-feature=+crt-static"]' >> /usr/src/atuin/.c
 RUN rustup target add armv7-unknown-linux-musleabihf
 
 # Clone the atuin source code
-ENV ATUIN_VERSION=v18.0.2
+ENV ATUIN_VERSION=v18.1.0
 RUN curl -L https://github.com/atuinsh/atuin/archive/refs/tags/${ATUIN_VERSION}.tar.gz -o atuin.tar.gz && \
     tar -xvzf atuin.tar.gz --strip-components=1
 
